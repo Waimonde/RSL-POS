@@ -36,3 +36,6 @@ frontend/dist/
 # OS
 .DS_Store
 Thumbs.db
+
+# Custom
+docs/RSL_POS.md

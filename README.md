@@ -21,6 +21,7 @@ rsl_pos/
 │   ├── payments/             # Cash, M-Pesa (models only)
 │   ├── customers/            # Customer profiles (models only)
 │   ├── suppliers/            # Supplier records (models only)
+│   ├── returns/              # Returns and refunds (models only)
 │   ├── reports/              # Analytics (models only)
 │   ├── api/                  # API layer (standalone app)
 │   │   ├── __init__.py

@@ -26,18 +26,11 @@ rsl_pos/
 │   ├── reports/              # Analytics (models only)
 │   ├── api/                  # API layer (standalone app)
 │   │   ├── __init__.py
+│   │   ├── permissions.py    # IsAdmin, IsCashier, IsAdminOrReadOnly
 │   │   ├── serializers/
 │   │   │   ├── __init__.py
-│   │   │   ├── accounts.py
-│   │   │   ├── inventory.py
-│   │   │   ├── sales.py
-│   │   │   └── ...
-│   │   ├── views/
-│   │   │   ├── __init__.py
-│   │   │   ├── accounts.py
-│   │   │   ├── inventory.py
-│   │   │   ├── sales.py
-│   │   │   └── ...
+│   │   │   └── accounts.py   # Login, User, UserList serializers
+│   │   ├── views.py          # Auth views (login, refresh, users)
 │   │   ├── urls.py
 │   │   └── tests.py
 │   ├── manage.py
@@ -54,8 +47,7 @@ rsl_pos/
 │       ├── context/          # Auth, cart state
 │       └── utils/            # Formatters, helpers
 ├── docs/
-│   ├── POS.pdf               # Original brief
-│   └── RSL_POS.md            # Implementation guide
+│   └── POS.pdf               # Original project brief
 ├── docker-compose.yml        # PostgreSQL container
 ├── .gitignore
 └── README.md

@@ -1,7 +1,7 @@
 [project]
 name = "rsl-pos-backend"
 version = "0.1.0"
-description = "Add your description here"
+description = "RSL POS Backend API"
 readme = "README.md"
 authors = [
     { name = "allanabiud", email = "allanabiud@gmail.com" }
@@ -16,6 +16,34 @@ dependencies = [
     "python-dotenv>=1.2.3",
 ]
 
+[dependency-groups]
+dev = [
+    "django-stubs",
+    "djangorestframework-stubs",
+    "pyright",
+]
+
 [build-system]
 requires = ["setuptools>=75.0.0"]
 build-backend = "setuptools.build_meta"
+
+[tool.setuptools.packages.find]
+include = ["config*"]
+exclude = ["accounts*", "inventory*", "sales*", "payments*", "customers*", "suppliers*", "reports*", "api*"]
+
+[tool.pyright]
+pythonVersion = "3.13"
+reportMissingImports = false
+reportMissingTypeStubs = false
+reportIncompatibleVariableOverride = false
+reportAttributeAccessIssue = false
+reportUnknownMemberType = false
+reportUnknownParameterType = false
+reportUnknownVariableType = false
+reportUnknownArgumentType = false
+reportUnknownLambdaType = false
+reportReturnType = false
+reportCallIssue = false
+reportArgumentType = false
+reportAssignmentType = false
+reportOperatorIssue = false

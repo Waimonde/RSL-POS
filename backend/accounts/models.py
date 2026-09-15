@@ -12,12 +12,16 @@ class User(AbstractUser):
         ACTIVE = "active", "Active"
         INACTIVE = "inactive", "Inactive"
 
-    name = models.CharField(max_length=200, blank=True)
     role = models.CharField(max_length=20, choices=Role.choices, default="cashier")
     status = models.CharField(max_length=20, choices=Status.choices, default="active")
 
     class Meta:
         db_table = "accounts_user"
 
+    @property
+    def display_name(self):
+        full = self.get_full_name()
+        return full if full else self.username
+
     def __str__(self):
-        return f"{self.name} ({self.get_role_display()})"
+        return f"{self.display_name} ({self.get_role_display()})"

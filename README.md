@@ -5,10 +5,12 @@ Point-of-Sale system for small and medium retail shops in Nairobi, built by Ryan
 ## Tech Stack
 
 - **Backend:** Django REST Framework + PostgreSQL
-- **Frontend:** React
-- **Auth:** JWT (djangorestframework-simplejwt)
+- **Frontend:** React (JavaScript) + Vite + Tailwind CSS + shadcn/ui
+- **Auth:** JWT (djangorestframework-simplejwt) with auto-refresh
+- **Charts:** Recharts
 - **Payments:** Cash + M-Pesa (Daraja API)
 - **Database:** PostgreSQL (Docker for local dev)
+- **Package Manager:** uv (Python), npm (frontend)
 
 ## Project Structure
 
@@ -38,16 +40,34 @@ rsl_pos/
 │   ├── requirements.txt
 │   ├── uv.lock
 │   └── .env.example
-├── frontend/                 # React app
-│   └── src/
-│       ├── api/              # Axios, API helpers
-│       ├── components/       # Reusable UI
-│       ├── pages/            # Route views
-│       ├── hooks/            # Custom hooks
-│       ├── context/          # Auth, cart state
-│       └── utils/            # Formatters, helpers
+├── frontend/                 # React app (Vite + Tailwind + shadcn/ui)
+│   ├── src/
+│   │   ├── api/              # Axios with JWT interceptors
+│   │   │   └── axios.js
+│   │   ├── components/       # Reusable UI components
+│   │   │   ├── AppHeader.jsx
+│   │   │   ├── AppLayout.jsx
+│   │   │   ├── AppSidebar.jsx
+│   │   │   ├── ProtectedRoute.jsx
+│   │   │   └── ui/           # shadcn/ui base components
+│   │   ├── context/
+│   │   │   └── AuthContext.jsx
+│   │   ├── hooks/
+│   │   │   ├── useAuth.js
+│   │   │   └── use-mobile.js
+│   │   ├── pages/
+│   │   │   ├── LoginPage.jsx
+│   │   │   └── DashboardPage.jsx
+│   │   ├── index.css
+│   │   ├── main.jsx
+│   │   └── App.jsx
+│   ├── index.html
+│   ├── vite.config.js
+│   ├── package.json
+│   └── .env.example
 ├── docs/
-│   └── POS.pdf               # Original project brief
+│   ├── POS.pdf               # Original project brief
+│   └── RSL_POS.md            # Implementation guide
 ├── docker-compose.yml        # PostgreSQL container
 ├── .gitignore
 └── README.md
@@ -78,12 +98,20 @@ uv run python manage.py runserver
 cd frontend
 npm install
 cp .env.example .env
-npm start
+npm run dev                   # Start Vite dev server
 ```
+
+## API Endpoints
+
+| Method | Endpoint | Description |
+| :--- | :--- | :--- |
+| POST | `/api/auth/login/` | Login, returns JWT tokens + user |
+| POST | `/api/auth/refresh/` | Refresh access token |
+| GET | `/api/users/me/` | Current user profile |
 
 ## Git Workflow
 
-- Use feature branches: `feat/branch-name`
-- Meaningful commits: `feat: add product management`
+- Feature branches: `feat/branch-name`
+- Commits: `feat: add product management`
 - PRs for reviewed changes before merging to `main`
 - Never commit `.env` files, passwords, or API keys

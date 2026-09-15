@@ -26,6 +26,7 @@ local_settings.py
 node_modules/
 frontend/build/
 frontend/dist/
+frontend/.vite/
 
 # IDE
 .vscode/

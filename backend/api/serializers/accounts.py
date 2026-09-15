@@ -21,14 +21,18 @@ class LoginSerializer(serializers.Serializer):
 
 
 class UserSerializer(serializers.ModelSerializer):
+    display_name = serializers.CharField(read_only=True)
+
     class Meta:
         model = User
-        fields = ("id", "username", "name", "email", "role", "status")
-        read_only_fields = ("id",)
+        fields = ("id", "username", "first_name", "last_name", "display_name", "email", "role", "status")
+        read_only_fields = ("id", "display_name")
 
 
 class UserListSerializer(serializers.ModelSerializer):
+    display_name = serializers.CharField(read_only=True)
+
     class Meta:
         model = User
-        fields = ("id", "username", "name", "role", "status")
-        read_only_fields = ("id",)
+        fields = ("id", "username", "first_name", "last_name", "display_name", "role", "status")
+        read_only_fields = ("id", "display_name")

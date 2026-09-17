@@ -12,14 +12,9 @@ import {
   SidebarMenuItem,
   SidebarMenuButton,
 } from "@/components/ui/sidebar";
-import { Badge } from "@/components/ui/badge";
 import { Avatar, AvatarFallback } from "@/components/ui/avatar";
 import {
   LayoutDashboardIcon,
-  PackageIcon,
-  ShoppingCartIcon,
-  UsersIcon,
-  BarChart3Icon,
   StoreIcon,
 } from "lucide-react";
 
@@ -30,10 +25,6 @@ const navItems = [
     route: "/",
     disabled: false,
   },
-  { title: "Products", icon: PackageIcon, route: "/products", disabled: true },
-  { title: "Sales", icon: ShoppingCartIcon, route: "/sales", disabled: true },
-  { title: "Customers", icon: UsersIcon, route: "/customers", disabled: true },
-  { title: "Reports", icon: BarChart3Icon, route: "/reports", disabled: true },
 ];
 
 function getInitials(name) {
@@ -112,14 +103,6 @@ export default function AppSidebar() {
                   <span className="truncate font-medium">
                     {user?.display_name || user?.username}
                   </span>
-                  {user?.role === "admin" && (
-                    <Badge
-                      variant="secondary"
-                      className="mt-0.5 w-fit text-[10px] capitalize"
-                    >
-                      {user.role}
-                    </Badge>
-                  )}
                 </div>
               )}
             </SidebarMenuButton>

@@ -3,9 +3,9 @@ import {
   ShoppingCartIcon,
   AlertTriangleIcon,
   UsersIcon,
-  PlusCircleIcon,
-  PackageIcon,
-  TruckIcon,
+  StoreIcon,
+  PackagePlusIcon,
+  ArrowUpDownIcon,
 } from "lucide-react";
 
 // --- Utilities ---
@@ -26,13 +26,35 @@ export const timeFilters = [
   { label: "This Year", value: "year" },
 ];
 
-export const quickActions = {
-  primary: { title: "New Sale", icon: PlusCircleIcon, route: "/sales/new", disabled: true },
-  secondary: [
-    { title: "Add Product", icon: PackageIcon, route: "/products/new", disabled: true },
-    { title: "Receive Stock", icon: TruckIcon, route: "/stock/receive", disabled: true },
-  ],
-};
+export const quickActions = [
+  {
+    id: "new-sale",
+    title: "New Sale",
+    description: "Open POS register to ring up a sale",
+    icon: StoreIcon,
+    href: "/pos",
+    variant: "default",
+    allowedRoles: ["admin", "cashier"],
+  },
+  {
+    id: "add-product",
+    title: "Add Product",
+    description: "Create a new product in inventory",
+    icon: PackagePlusIcon,
+    href: "/inventory?action=add-product",
+    variant: "outline",
+    allowedRoles: ["admin"],
+  },
+  {
+    id: "receive-stock",
+    title: "Receive Stock",
+    description: "Record incoming inventory delivery",
+    icon: ArrowUpDownIcon,
+    href: "/inventory?action=receive-stock",
+    variant: "outline",
+    allowedRoles: ["admin"],
+  },
+];
 
 export const salesChartConfig = {
   sales: { label: "Sales (KES)", color: "var(--chart-1)" },

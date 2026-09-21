@@ -1,4 +1,5 @@
 import { useState, useMemo, useRef, useEffect } from "react";
+import { useNavigate } from "react-router-dom";
 import { useAuth } from "@/hooks/useAuth";
 import { Button } from "@/components/ui/button";
 import {
@@ -15,14 +16,9 @@ import {
   ChartTooltipContent,
 } from "@/components/ui/chart";
 import { Bar, BarChart, CartesianGrid, XAxis, Area, AreaChart } from "recharts";
-import { CalendarIcon, ChevronDownIcon } from "lucide-react";
+import { CalendarIcon } from "lucide-react";
+import { Popover, PopoverTrigger, PopoverContent } from "@/components/ui/popover";
 import { Calendar } from "@/components/ui/calendar";
-import {
-  DropdownMenu,
-  DropdownMenuTrigger,
-  DropdownMenuContent,
-  DropdownMenuItem,
-} from "@/components/ui/dropdown-menu";
 import {
   getGreeting,
   timeFilters,
@@ -40,23 +36,11 @@ import {
 
 export default function DashboardPage() {
   const { user } = useAuth();
+  const navigate = useNavigate();
   const [timeFilter, setTimeFilter] = useState("today");
   const [chartView, setChartView] = useState("sales");
   const [dateRange, setDateRange] = useState({ from: undefined, to: undefined });
   const [calendarOpen, setCalendarOpen] = useState(false);
-  const calendarRef = useRef(null);
-
-  useEffect(() => {
-    function handleClickOutside(e) {
-      if (calendarRef.current && !calendarRef.current.contains(e.target)) {
-        setCalendarOpen(false);
-      }
-    }
-    if (calendarOpen) {
-      document.addEventListener("mousedown", handleClickOutside);
-    }
-    return () => document.removeEventListener("mousedown", handleClickOutside);
-  }, [calendarOpen]);
 
   const filteredSalesData = useMemo(() => {
     const data = salesData[timeFilter];
@@ -105,7 +89,7 @@ export default function DashboardPage() {
 
   return (
     <div className="space-y-6 p-6">
-      {/* Top row: Greeting + Quick Actions */}
+      {/* Top row: Greeting + Extensible Quick Actions */}
       <div className="flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between">
         <div>
           <h1 className="text-2xl font-bold">
@@ -116,59 +100,57 @@ export default function DashboardPage() {
           </p>
         </div>
 
-        <div className="flex items-center">
-          <Button
-            variant="outline"
-            size="sm"
-            disabled={quickActions.primary.disabled}
-            className="gap-1.5 rounded-r-none"
-          >
-            <quickActions.primary.icon className="size-4" />
-            <span className="hidden lg:inline">{quickActions.primary.title}</span>
-          </Button>
-          <DropdownMenu>
-            <DropdownMenuTrigger asChild>
-              <Button variant="outline" size="sm" className="rounded-l-none border-l-0 px-2" disabled>
-                <ChevronDownIcon className="size-4" />
+        {/* Dynamic Quick Actions */}
+        <div className="flex flex-wrap items-center gap-2">
+          {quickActions
+            .filter((action) => !action.allowedRoles || action.allowedRoles.includes(user?.role || "cashier"))
+            .map((action) => (
+              <Button
+                key={action.id}
+                variant={action.variant || "outline"}
+                size="sm"
+                onClick={() => navigate(action.href)}
+                className="gap-2 cursor-pointer shadow-2xs"
+              >
+                <action.icon className="size-4" />
+                <span>{action.title}</span>
               </Button>
-            </DropdownMenuTrigger>
-            <DropdownMenuContent align="end" className="w-48">
-              {quickActions.secondary.map((action) => (
-                <DropdownMenuItem key={action.title} disabled={action.disabled}>
-                  <action.icon className="size-4" />
-                  {action.title}
-                </DropdownMenuItem>
-              ))}
-            </DropdownMenuContent>
-          </DropdownMenu>
+            ))}
         </div>
       </div>
 
       <Separator />
 
       {/* Time Filters */}
-      <div className="flex items-center gap-1">
-        {timeFilters.map((filter) => (
-          <Button
-            key={filter.value}
-            variant={dateRange.from ? "ghost" : timeFilter === filter.value ? "default" : "ghost"}
-            size="sm"
-            onClick={() => { setTimeFilter(filter.value); setDateRange({ from: undefined, to: undefined }); }}
-          >
-            {filter.label}
-          </Button>
-        ))}
-        <div className="relative" ref={calendarRef}>
-          <Button
-            variant={dateRange.from ? "default" : "outline"}
-            size="icon-sm"
-            className="ml-1"
-            onClick={() => setCalendarOpen(!calendarOpen)}
-          >
-            <CalendarIcon className="size-4" />
-          </Button>
-          {calendarOpen && (
-            <div className="absolute right-0 top-full z-50 mt-2 rounded-lg border bg-popover p-2 shadow-md">
+      <div className="flex items-center">
+        <div data-slot="button-group" className="flex rounded-lg border p-0.5">
+          {timeFilters.map((filter) => (
+            <Button
+              key={filter.value}
+              variant={!dateRange.from && timeFilter === filter.value ? "default" : "ghost"}
+              size="sm"
+              className="h-7 px-3 text-xs"
+              onClick={() => {
+                setTimeFilter(filter.value);
+                setDateRange({ from: undefined, to: undefined });
+              }}
+            >
+              {filter.label}
+            </Button>
+          ))}
+          <Popover open={calendarOpen} onOpenChange={setCalendarOpen}>
+            <PopoverTrigger
+              render={
+                <Button
+                  variant={dateRange.from ? "default" : "ghost"}
+                  size="sm"
+                  className="h-7 w-7 p-0"
+                />
+              }
+            >
+              <CalendarIcon className="size-3.5" />
+            </PopoverTrigger>
+            <PopoverContent align="start" side="bottom" sideOffset={6} className="w-auto p-2">
               <Calendar
                 mode="range"
                 selected={dateRange.from ? dateRange : undefined}
@@ -189,8 +171,8 @@ export default function DashboardPage() {
                   </Button>
                 </div>
               )}
-            </div>
-          )}
+            </PopoverContent>
+          </Popover>
         </div>
       </div>
 
@@ -223,7 +205,7 @@ export default function DashboardPage() {
               <CardTitle className="text-base">Overview</CardTitle>
               <p className="text-xs text-muted-foreground">{chartDescription}</p>
             </div>
-            <div className="flex rounded-lg border p-0.5">
+            <div data-slot="button-group" className="flex rounded-lg border p-0.5">
               <Button
                 variant={chartView === "sales" ? "default" : "ghost"}
                 size="sm"

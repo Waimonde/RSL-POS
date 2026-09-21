@@ -14,6 +14,11 @@ class Category(models.Model):
 
 
 class Product(models.Model):
+
+    class Status(models.TextChoices):
+        ACTIVE = "active", "Active"
+        INACTIVE = "inactive", "Inactive"
+
     category = models.ForeignKey(
         Category, on_delete=models.SET_NULL, null=True, blank=True, related_name="products"
     )
@@ -24,6 +29,7 @@ class Product(models.Model):
     selling_price = models.DecimalField(max_digits=10, decimal_places=2)
     quantity = models.PositiveIntegerField(default=0)
     reorder_level = models.PositiveIntegerField(default=10)
+    status = models.CharField(max_length=20, choices=Status.choices, default=Status.ACTIVE)
     created_at = models.DateTimeField(auto_now_add=True)
     updated_at = models.DateTimeField(auto_now=True)
 

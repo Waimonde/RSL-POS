@@ -1,15 +1,17 @@
 import { useState } from "react"
 import { useNavigate } from "react-router-dom"
 import { useAuth } from "@/hooks/useAuth"
+import { toast } from "@/components/ui/toast"
 import { Button } from "@/components/ui/button"
 import { Input } from "@/components/ui/input"
 import { Label } from "@/components/ui/label"
 import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from "@/components/ui/card"
-import { StoreIcon } from "lucide-react"
+import { StoreIcon, EyeIcon, EyeOffIcon } from "lucide-react"
 
 export default function LoginPage() {
   const [username, setUsername] = useState("")
   const [password, setPassword] = useState("")
+  const [showPassword, setShowPassword] = useState(false)
   const [error, setError] = useState("")
   const [loading, setLoading] = useState(false)
   const { login } = useAuth()
@@ -21,14 +23,29 @@ export default function LoginPage() {
     setLoading(true)
 
     try {
-      await login(username, password)
-      navigate("/")
+      const data = await login(username, password)
+      toast.add({
+        title: "Login Successful",
+        description: `Welcome back, ${data?.user?.display_name || data?.user?.username || username}!`,
+        type: "success",
+      })
+      if (data?.user?.role === "admin") {
+        navigate("/")
+      } else {
+        navigate("/pos")
+      }
     } catch (err) {
       const message =
         err.response?.data?.detail ||
         err.response?.data?.error ||
-        "Invalid credentials"
-      setError(typeof message === "string" ? message : "Login failed")
+        "Invalid username or password"
+      const errorMsg = typeof message === "string" ? message : "Login failed"
+      setError(errorMsg)
+      toast.add({
+        title: "Login Failed",
+        description: errorMsg,
+        type: "error",
+      })
     } finally {
       setLoading(false)
     }
@@ -78,14 +95,27 @@ export default function LoginPage() {
                   Forgot your password?
                 </button>
               </div>
-              <Input
-                id="password"
-                type="password"
-                placeholder="Enter your password"
-                value={password}
-                onChange={(e) => setPassword(e.target.value)}
-                required
-              />
+              <div className="relative">
+                <Input
+                  id="password"
+                  type={showPassword ? "text" : "password"}
+                  placeholder="Enter your password"
+                  value={password}
+                  onChange={(e) => setPassword(e.target.value)}
+                  required
+                  className="pr-10"
+                />
+                <Button
+                  type="button"
+                  variant="ghost"
+                  size="icon-xs"
+                  onClick={() => setShowPassword((prev) => !prev)}
+                  className="absolute right-1 top-1/2 -translate-y-1/2 text-muted-foreground hover:text-foreground"
+                  aria-label={showPassword ? "Hide password" : "Show password"}
+                >
+                  {showPassword ? <EyeOffIcon className="size-4" /> : <EyeIcon className="size-4" />}
+                </Button>
+              </div>
             </div>
             <Button type="submit" className="w-full" disabled={loading}>
               {loading ? "Signing in..." : "Sign In"}
